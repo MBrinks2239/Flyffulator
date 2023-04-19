@@ -3,29 +3,29 @@
     <div class="tooltip">
       <h5>info</h5>
     </div>
-    <leftbar/>
+    <leftbar />
 
     <div class="themetoggle"><img :src="getIconUrl(themeImage)" @click="toggleTheme"></div>
-    
+
     <div class="content">
       <div class="basestats">
-        <img :src="getImageUrl(character.ref.weapon_img)"/>
+        <img :src="getImageUrl(character.ref.weapon_img)" />
         <!--<top-stats/>-->
       </div>
 
       <div class="extensivestats">
-        
+
         <h3>Leveling</h3>
         <div class="extensiverow">
-          <experience-per-kill/>
-          <kills-per-level/>
-          <exp-hp-ratio/>
+          <experience-per-kill />
+          <kills-per-level />
+          <exp-hp-ratio />
         </div>
 
         <div class="extensiverow">
-          <hits-per-level/>
+          <hits-per-level />
         </div>
-        
+
         <h3>Damage</h3>
         <div class="extensiverow">
           <damage-box title="Average AA" skillindex=-1 />
@@ -35,18 +35,20 @@
         </div>
 
         <div class="extensiverow">
-          <damage-specifics/>
-          <auto-ratio/>
+          <damage-specifics />
+          <auto-ratio />
         </div>
 
         <div class="footer">
-          <h5>Flyff simulator built specifically for <a href='https://flyff-api.sniegu.fr/'>Flyff Universe</a> by Frostiae#2809</h5>
-          <h5 style="opacity: 0.5;">If you would like to follow development or contribute, visit the <a href="https://github.com/Frostiae/Flyffulator">GitHub</a> page.</h5>
+          <h5>Flyff simulator built specifically for <a href='https://flyff-api.sniegu.fr/'>Flyff Universe</a> by
+            Frostiae#2809</h5>
+          <h5 style="opacity: 0.5;">If you would like to follow development or contribute, visit the <a
+              href="https://github.com/Frostiae/Flyffulator">GitHub</a> page.</h5>
         </div>
       </div>
     </div>
 
-    <rightbar/>
+    <rightbar />
   </div>
 </template>
 
@@ -66,6 +68,10 @@ import { Utils } from './calc/utils.js'
 import { Billposter, Vagrant } from './calc/jobs'
 
 const utils = new Utils()
+
+function escapeRegex(string) {
+  return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
 
 export default {
   name: 'App',
@@ -104,19 +110,19 @@ export default {
   watch: {
     darkMode() {
       if (this.darkMode) {
-          this.componentbg = '#262626'
-          this.sidepanelbg = '#1d1d1d'
-          this.hcolor = '#F2F2F2'
-          this.pcolor = '#A67041'
-          this.mainbg1 = '#1b1b1b'
-          this.mainbg2 = '#292929'
+        this.componentbg = '#262626'
+        this.sidepanelbg = '#1d1d1d'
+        this.hcolor = '#F2F2F2'
+        this.pcolor = '#A67041'
+        this.mainbg1 = '#1b1b1b'
+        this.mainbg2 = '#292929'
       } else {
-          this.componentbg = '#2e325c'
-          this.sidepanelbg = '#1f2342'
-          this.hcolor = '#7279aa'
-          this.pcolor = '#dadeef'
-          this.mainbg1 = '#252849'
-          this.mainbg2 = '#1c1e3a'
+        this.componentbg = '#2e325c'
+        this.sidepanelbg = '#1f2342'
+        this.hcolor = '#7279aa'
+        this.pcolor = '#dadeef'
+        this.mainbg1 = '#252849'
+        this.mainbg2 = '#1c1e3a'
       }
     },
     'character.ref.level'() { this.updateCharacter() },
@@ -181,32 +187,37 @@ export default {
         this.character.ref.monsters = this.monsters;
         this.skillIndex = index;
       }
-      
+
       this.focusMonster = this.monsters.find(monster => monster.level >= this.character.ref.level) || this.monsters.slice(-1)[0];
     },
-    getImageUrl(img) {
-      var images = require.context('./assets/images/', false, /\.png$/)
-      return images('./' + img)
+    getImageUrl(img, store) {
+      const rx = new RegExp(escapeRegex(img), 'i')
+      store = store || (import.meta.glob('@/**/*.png', { eager: true }));
+      for (const i in store) {
+        if (i.match(rx)) {
+          let url = store[i].default;
+          if (url.startsWith('.') || url.startsWith('/')) {
+            return store[i].default.trimStart('.').trimStart('/');
+          }
+          return store[i].default;
+        }
+      }
+      return this.getImageUrl('syssysquentskil')
     },
     getIconUrl(img) {
-      try {
-        var images = require.context('./assets/images/Icons/Items', false, /\.png$/)
-        return images('./' + img)
-      } catch(error) {
-        // dummy icon if icon couldn't be found
-        return images('./' + "syssysqueheadrb.png")
-      }
+      const itemIconImages = import.meta.globEager('@/assets/images/Icons/Items/**/*.png')
+      return this.getImageUrl(img, itemIconImages)
     },
     getSkillIconUrl(img) {
-      var images = require.context('./assets/images/Icons/Skills/colored', false, /\.png$/)
-      return images('./' + img)
+      const skillIconImages = import.meta.globEager('@/assets/images/Icons/Skills/colored/**/*.png')
+      return this.getImageUrl(img, skillIconImages)
     }
   }
 }
 
 function validateInput(character) {
   character.level = character.level < 1 ? 1 : character.level;
-  character.level = character.level > 120 ? 120 : character.level;
+  character.level = character.level > Utils.maxLevel ? Utils.maxLevel : character.level;
   character.str = character.str < 1 ? 1 : character.str;
   character.sta = character.sta < 1 ? 1 : character.sta;
   character.dex = character.dex < 1 ? 1 : character.dex;
@@ -261,7 +272,8 @@ function validateInput(character) {
   color: v-bind(pcolor);
 }
 
-body, html {
+body,
+html {
   overflow: hidden;
   margin: 0;
 }
@@ -294,7 +306,11 @@ p {
   transition: 0.3s;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   color: v-bind(hcolor);
   font-weight: 500;
   margin-bottom: 8px;
@@ -305,7 +321,8 @@ h5 {
   margin: 3px;
 }
 
-ul, ol {
+ul,
+ol {
   font-size: 13px;
   color: v-bind(hcolor);
   transition: 0.3s;
@@ -384,7 +401,8 @@ option {
           margin-left: 20px;
         }
 
-        h3, h5 {
+        h3,
+        h5 {
           margin-left: 20px;
         }
       }
@@ -455,7 +473,8 @@ option {
   }
 }
 
-input[type=number], input[type=text] {
+input[type=number],
+input[type=text] {
   -moz-appearance: textfield;
   appearance: textfield;
   background: none;
