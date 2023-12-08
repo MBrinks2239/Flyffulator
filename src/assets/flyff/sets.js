@@ -2591,23 +2591,22 @@ export const setsjson = [
   },
   {
     id: 8383,
-    name: { en: "PvE Velox Set" },
+    name: { en: "Curena Set" },
     transy: 9164,
     parts: [8869, 2237, 3255, 1807],
     bonus: [
-      { equipped: 4, ability: { parameter: "maxhp", add: 25, rate: true } },
-      { equipped: 4, ability: { parameter: "pvedamage", add: 10, rate: true } },
+      { equipped: 4, ability: { parameter: "maxhp", add: 30, rate: true } },
+      { equipped: 4, ability: { parameter: "pvedamage", add: 20, rate: true } },
       {
         equipped: 4,
-        ability: { parameter: "pvedamagereduction", add: 5, rate: true },
+        ability: { parameter: "pvedamagereduction", add: 10, rate: true },
       },
-      { equipped: 4, ability: { parameter: "block", add: 5, rate: true } },
-      { equipped: 3, ability: { parameter: "pvedamage", add: 5, rate: true } },
+      { equipped: 4, ability: { parameter: "block", add: 10, rate: true } },
+      { equipped: 4, ability: { parameter: "attack", add: 4, rate: true } },
       {
         equipped: 3,
-        ability: { parameter: "attackspeed", add: 15, rate: true },
+        ability: { parameter: "attack", add: 3, rate: true },
       },
-      { equipped: 3, ability: { parameter: "block", add: 5, rate: true } },
       {
         equipped: 3,
         ability: { parameter: "pvedamagereduction", add: 5, rate: true },
